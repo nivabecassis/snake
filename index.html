@@ -3,17 +3,30 @@
     <head>
         <meta charset="utf-8" />
         <title>Projet Web: Jeu SNAKE</title>
+        <link rel="stylesheet" href="main.css">
         <script src="script.js"></script>
     </head>
     <body>
-        <div id="menu">
-            <div>
-
+        <div class="container">
+            <div id="menu">
+                <div>
+                    <div class="container">
+                        <h2>JEU SNAKE</h2>
+                        <input type="submit" id="start" value="COMMENCER LA PARTIE">
+                        <select id="niveau">
+                            <option>Facile</option>
+                            <option>Moyen</option>
+                            <option>Difficile</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div id="jeu">
-            <canvas width="200" height="200"></canvas>
+            <div id="jeu" class="invisible">
+                <h2>PLAY SNAKE</h2>
+                <input id="retour_menu" type="submit" value="MENU">
+                <canvas width="500" height="500"></canvas>
+            </div>
         </div>
     </body>
 </html>
