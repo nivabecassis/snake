@@ -34,7 +34,7 @@ function startGame() {
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
     setInterval(() => {
-        switchSnakeDirection(SNAKE.direction);
+        drawSnake();
     }, GAME.currentLevel["delay"]);
 }
 
@@ -105,7 +105,16 @@ function addSnakeListeners() {
 function switchSnakeDirection(direction) {
     console.log(direction);
     SNAKE.direction = direction;
-    switch (direction) {
+}
+
+
+
+/**
+ * Dessine le serpent sur le canvas en utilisant les coordonnees
+ * qui sont stockees dans l'objet SNAKE.
+ */
+function drawSnake() {
+    switch (SNAKE.direction) {
         case "ArrowUp": 
             shiftSnake(0, -1);
             break;
@@ -119,8 +128,15 @@ function switchSnakeDirection(direction) {
             shiftSnake(1, 0);
             break;
     }
-}
+    // Draw new position
+    CANVAS.ctx.fillStyle = "black";
+    CANVAS.ctx.fillRect(SNAKE.coords[0].x, SNAKE.coords[0].y, GAME.blockWidth, GAME.blockHeight);
 
+    // Remove old position
+    CANVAS.ctx.fillStyle = "white";
+    CANVAS.ctx.fillRect(SNAKE.coords[SNAKE.coords.length - 1].x, 
+        SNAKE.coords[SNAKE.coords.length - 1].y, GAME.blockWidth, GAME.blockHeight);
+}
 
 function shiftSnake(stepX, stepY) {
     for (let i = SNAKE.coords.length - 1; i > 0; i--) {
@@ -132,22 +148,8 @@ function shiftSnake(stepX, stepY) {
         x: second.x + (stepX * GAME.blockWidth), 
         y: second.y + (stepY * GAME.blockHeight) 
     };
-    CANVAS.ctx.fillStyle = "black";
-    CANVAS.ctx.fillRect(SNAKE.coords[0].x, SNAKE.coords[0].y, GAME.blockWidth, GAME.blockHeight);
-    CANVAS.ctx.fillStyle = "white";
-    CANVAS.ctx.fillRect(SNAKE.coords[SNAKE.coords.length - 1].x, 
-        SNAKE.coords[SNAKE.coords.length - 1].y, GAME.blockWidth, GAME.blockHeight);
 }
-
-/**
- * Dessine le serpent sur le canvas en utilisant les coordonnees
- * qui sont stockees dans l'objet SNAKE.
- */
-function drawSnake() {
-    
-    
-}
-
+        
 function determineLevel(levels, current) {
     return levels.find((l) => l["level"] === current);
 }
