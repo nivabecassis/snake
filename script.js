@@ -62,7 +62,6 @@ const DIRECTION = [
 
 const SNAKE = {
     coords: [],
-    // direction: "ArrowLeft",
     initialLength: 4
 }
 
@@ -140,8 +139,39 @@ function shiftSnake(stepX, stepY) {
         x: second.x + (stepX * GAME.blockWidth), 
         y: second.y + (stepY * GAME.blockHeight) 
     };
+    for (let i = 0; i < SNAKE.coords.length; i++) {
+        if (i >= 1) {
+            checkForHit(i);
+        }
+        wallWrap(i);
+    }
     draw();
-    checkForHit(); 
+}
+
+/**
+ * Checks for a potential wrap on the borders of the game.
+ * If the snake's body coordinate has reached a wall it will 
+ * be wrapped to the opposing wall on that axis.
+ * @param {int} index 
+ */
+function wallWrap(index) {
+    let bodyCoord = SNAKE.coords[index];
+    let boardWidth = GAME.currentLevel.dimensions.width;
+    let boardHeight = GAME.currentLevel.dimensions.height;
+    
+    // Handling the X axis walls
+    if (bodyCoord.x < 0) {
+        SNAKE.coords[index].x = boardWidth;
+    } else if (bodyCoord.x >= boardWidth) {
+        SNAKE.coords[index].x = 0;
+    }
+
+    // Handling the Y axis walls
+    if (bodyCoord.y < 0) {
+        SNAKE.coords[index].y = boardHeight;
+    } else if (bodyCoord.y >= boardHeight) {
+        SNAKE.coords[index].y = 0;
+    }
 }
 
 /**
@@ -165,17 +195,15 @@ function eraseBlock(position) {
 
 /**
  * Checks if the head of the snake has the same coords as 
- * any of the coordinates of the snake's body. Ends the game
+ * the coordinates of the snake's body. Ends the game
  * if the previous statement is true.
+ * @param {int} index in the snake's body 
  */
-function checkForHit() {
+function checkForHit(index) {
     let head = SNAKE.coords[0];
-    // Start at i = 1 to skip the head of the snake
-    for (let i = 1; i < SNAKE.coords.length; i++) {
-        let bodyCoord = SNAKE.coords[i];
-        if (coordsCompare(head, bodyCoord)) {
-            endGame();
-        }
+    let bodyCoord = SNAKE.coords[index];
+    if (coordsCompare(head, bodyCoord)) {
+        endGame();
     }
 }
 
