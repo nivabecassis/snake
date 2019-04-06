@@ -1,10 +1,6 @@
 "use strict";
 
-function $(id) {
-    return document.getElementById(id);
-}
-
-function init() {
+document.addEventListener("DOMContentLoaded", function() {
     console.log("Loaded the page");
     $("start").addEventListener("click", changePage);
     CANVAS.canvas = $("canvas");
@@ -15,14 +11,16 @@ function init() {
     console.log(current);
     CANVAS.canvas.width = current["dimensions"].width;
     CANVAS.canvas.height = current["dimensions"].height;
+});
+
+function $(id) {
+    return document.getElementById(id);
 }
 
 function changePage(e) {
     if (e.target) {
         $("jeu").classList.remove("invisible");
         $("menu").classList.add("invisible");
-        
-        // Debut du jeu
         startGame();
     }
 }
@@ -34,7 +32,8 @@ function startGame() {
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
     setInterval(() => {
-        drawSnake();
+        switchSnakeDirection();
+        // draw();
     }, GAME.currentLevel["delay"]);
 }
 
@@ -49,7 +48,7 @@ const LEVELS = {
             "fruit": [
                 [10,10]
             ],
-            "delay": 500
+            "delay": 50
         }
     ]
 }
@@ -63,7 +62,7 @@ const DIRECTION = [
 
 const SNAKE = {
     coords: [],
-    direction: "ArrowLeft",
+    // direction: "ArrowLeft",
     initialLength: 4
 }
 
@@ -71,7 +70,6 @@ const GAME = {
     currentLevel: determineLevel(LEVELS.levels, 0),
     blockWidth: 12,
     blockHeight: 12
-
 }
 
 const CANVAS = {}
@@ -98,22 +96,20 @@ function placeSnake(currentLevel) {
  */
 function addSnakeListeners() {
     document.addEventListener("keydown", (e) => {
-        switchSnakeDirection(e.key);
+        setSnakeDirection(e.key);
     });
 }
 
-function switchSnakeDirection(direction) {
+function setSnakeDirection(direction) {
     console.log(direction);
     SNAKE.direction = direction;
 }
-
-
 
 /**
  * Dessine le serpent sur le canvas en utilisant les coordonnees
  * qui sont stockees dans l'objet SNAKE.
  */
-function drawSnake() {
+function switchSnakeDirection() {
     switch (SNAKE.direction) {
         case "ArrowUp": 
             shiftSnake(0, -1);
@@ -127,18 +123,14 @@ function drawSnake() {
         case "ArrowRight": 
             shiftSnake(1, 0);
             break;
+        default: 
+            console.log("Waiting for user input");
+            break;
     }
-    // Draw new position
-    CANVAS.ctx.fillStyle = "black";
-    CANVAS.ctx.fillRect(SNAKE.coords[0].x, SNAKE.coords[0].y, GAME.blockWidth, GAME.blockHeight);
-
-    // Remove old position
-    CANVAS.ctx.fillStyle = "white";
-    CANVAS.ctx.fillRect(SNAKE.coords[SNAKE.coords.length - 1].x, 
-        SNAKE.coords[SNAKE.coords.length - 1].y, GAME.blockWidth, GAME.blockHeight);
 }
 
 function shiftSnake(stepX, stepY) {
+    eraseBlock(SNAKE.coords[SNAKE.coords.length - 1]);
     for (let i = SNAKE.coords.length - 1; i > 0; i--) {
         SNAKE.coords[i] = SNAKE.coords[i - 1];
     }
@@ -148,10 +140,28 @@ function shiftSnake(stepX, stepY) {
         x: second.x + (stepX * GAME.blockWidth), 
         y: second.y + (stepY * GAME.blockHeight) 
     };
+    draw();
+}
+
+/**
+ * Draws the new position of the snake object
+ */
+function draw() {
+    CANVAS.ctx.fillStyle = "black";
+    CANVAS.ctx.fillRect(SNAKE.coords[0].x, SNAKE.coords[0].y, 
+        GAME.blockWidth, GAME.blockHeight);
+}
+
+/**
+ * Erases a single block from the canvas
+ * @param {Object} position {x,y} position to erase
+ */
+function eraseBlock(position) {
+    CANVAS.ctx.fillStyle = "white";
+    CANVAS.ctx.fillRect(position.x, position.y, 
+        GAME.blockWidth, GAME.blockHeight);
 }
         
 function determineLevel(levels, current) {
     return levels.find((l) => l["level"] === current);
 }
-
-document.addEventListener("DOMContentLoaded", init);
