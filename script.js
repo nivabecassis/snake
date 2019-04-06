@@ -141,6 +141,7 @@ function shiftSnake(stepX, stepY) {
         y: second.y + (stepY * GAME.blockHeight) 
     };
     draw();
+    checkForHit(); 
 }
 
 /**
@@ -160,6 +161,35 @@ function eraseBlock(position) {
     CANVAS.ctx.fillStyle = "white";
     CANVAS.ctx.fillRect(position.x, position.y, 
         GAME.blockWidth, GAME.blockHeight);
+}
+
+/**
+ * Checks if the head of the snake has the same coords as 
+ * any of the coordinates of the snake's body. Ends the game
+ * if the previous statement is true.
+ */
+function checkForHit() {
+    let head = SNAKE.coords[0];
+    // Start at i = 1 to skip the head of the snake
+    for (let i = 1; i < SNAKE.coords.length; i++) {
+        let bodyCoord = SNAKE.coords[i];
+        if (coordsCompare(head, bodyCoord)) {
+            endGame();
+        }
+    }
+}
+
+function endGame() {
+    alert("You lose!");
+}
+
+/**
+ * Compares two coordinates for a match.
+ * @param {Object} coords1 First coordinates
+ * @param {Object} coords2 Second coordinates 
+ */
+function coordsCompare(coords1, coords2) {
+    return coords1.x === coords2.x && coords1.y === coords2.y;
 }
         
 function determineLevel(levels, current) {
