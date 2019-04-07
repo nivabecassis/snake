@@ -27,7 +27,7 @@
 [ ] Add check when generating fruit that it is not placed on a wall
 [x] Implement wall hit check
 [x] Add game end functionality properly
-[ ] Fix game end functionality bugs
+[x] Fix game end functionality bugs
 
 Background image attribution:
 <a href="https://www.vecteezy.com">Free Vector Design by: vecteezy.com</a>

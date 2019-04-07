@@ -208,17 +208,27 @@ function shiftSnake(stepX, stepY) {
 
     // Loop used for any operations applied to the snake's
     // current position
+    let gameEnd = false;
     for (let i = 0; i < SNAKE.coords.length; i++) {
         if (i >= 1) {
-            checkForHit(i);
+            gameEnd = checkForHit(i);
+            if (gameEnd === true) {
+                break;
+            }
         }
         eatFruit();
-        wallHit();
+        gameEnd = wallHit();
+        if (gameEnd === true) {
+            break;
+        }
         wallWrap(i);
     }
 
-    // Draw the snake's head with its new coordinates
-    drawBlock(SNAKE.coords[0], CANVAS.snakeColor);
+    // Check for the game's end
+    if (gameEnd !== true) {
+        // Draw the snake's head with its new coordinates
+        drawBlock(SNAKE.coords[0], CANVAS.snakeColor);
+    }
 }
 
 /**
@@ -276,6 +286,7 @@ function checkForHit(index) {
     let bodyCoord = SNAKE.coords[index];
     if (coordsCompare(head, bodyCoord)) {
         endGame();
+        return true;
     }
 }
 
@@ -286,6 +297,8 @@ function endGame() {
     let loseMsg = $("lose-msg");
     loseMsg.classList.remove("invisible");
     clearInterval(GAME.loopId);
+    SNAKE.coords = [];
+    SNAKE.direction = null;
 }
 
 /**
@@ -372,6 +385,7 @@ function wallHit() {
             if (coordsCompare(snakeHead, wall)) {
                 // Snake head hit the wall
                 endGame();
+                return true;
             }
         });
     }
