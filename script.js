@@ -36,6 +36,7 @@ function changePage(e) {
  * 
  */
 function startGame() {
+    generateFruit();
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
     setInterval(() => {
@@ -53,9 +54,6 @@ const LEVELS = {
             "dimensions": {width:500, height:500},
             "walls": [
                 [5,5], [5,6], [5,7], [5,8], [70,35], [71,35], [72,35]
-            ],
-            "fruit": [
-                [10,10]
             ],
             "delay": 50
         }
@@ -76,11 +74,16 @@ const SNAKE = {
 
 const GAME = {
     currentLevel: determineLevel(LEVELS.levels, 0),
-    blockWidth: 12,
-    blockHeight: 12
+    blockWidth: 10,
+    blockHeight: 10
 }
 
-const CANVAS = {}
+const CANVAS = {
+    snakeColor: "black",
+    fruitColor: "red",
+    wallColor: "black",
+    bgColor: "white"
+}
 
 /**
  * Determine la position initiale du serpent en fonction
@@ -88,6 +91,7 @@ const CANVAS = {}
  * @param {Object} currentLevel Level object 
  */
 function placeSnake(currentLevel) {
+    CANVAS.ctx.fillStyle = CANVAS.snakeColor;
     let x = currentLevel.dimensions.width / 2;
     let y = currentLevel.dimensions.height / 2; 
     for (let i = 0; i < SNAKE.initialLength; i++) {
@@ -136,24 +140,41 @@ function switchSnakeDirection() {
     }
 }
 
+/**
+ * Moves the snake's position by one block using the 
+ * two params to indicate directions.
+ * @param {int} stepX Step amount for the x axis
+ * @param {int} stepY Step amount for the y axis
+ */
 function shiftSnake(stepX, stepY) {
-    eraseBlock(SNAKE.coords[SNAKE.coords.length - 1]);
+    // Erase the last block of the snake's body from the canvas
+    SNAKE.tail = SNAKE.coords[SNAKE.coords.length - 1];
+    drawBlock(SNAKE.tail, CANVAS.bgColor);
+    
+    // Shift each position of the snake by one
     for (let i = SNAKE.coords.length - 1; i > 0; i--) {
         SNAKE.coords[i] = SNAKE.coords[i - 1];
     }
-    // Deuxieme position du serpent
+
+    // First position of the snake is assigned manually
     let second = SNAKE.coords[1];
     SNAKE.coords[0] = {
         x: second.x + (stepX * GAME.blockWidth), 
         y: second.y + (stepY * GAME.blockHeight) 
     };
+
+    // Loop used for any operations applied to the snake's
+    // current position
     for (let i = 0; i < SNAKE.coords.length; i++) {
         if (i >= 1) {
             checkForHit(i);
         }
+        eatFruit();
         wallWrap(i);
     }
-    draw();
+
+    // Draw the snake's head with its new coordinates
+    drawBlock(SNAKE.coords[0], CANVAS.snakeColor);
 }
 
 /**
@@ -183,20 +204,11 @@ function wallWrap(index) {
 }
 
 /**
- * Draws the new position of the snake object
+ * Draws a single block on the canvas
+ * @param {Object} position {x,y} position to draw
  */
-function draw() {
-    CANVAS.ctx.fillStyle = "black";
-    CANVAS.ctx.fillRect(SNAKE.coords[0].x, SNAKE.coords[0].y, 
-        GAME.blockWidth, GAME.blockHeight);
-}
-
-/**
- * Erases a single block from the canvas
- * @param {Object} position {x,y} position to erase
- */
-function eraseBlock(position) {
-    CANVAS.ctx.fillStyle = "white";
+function drawBlock(position, color) {
+    CANVAS.ctx.fillStyle = color;
     CANVAS.ctx.fillRect(position.x, position.y, 
         GAME.blockWidth, GAME.blockHeight);
 }
@@ -215,6 +227,9 @@ function checkForHit(index) {
     }
 }
 
+/**
+ * Handles the end of the game.
+ */
 function endGame() {
     alert("You lose!");
 }
@@ -228,6 +243,53 @@ function coordsCompare(coords1, coords2) {
     return coords1.x === coords2.x && coords1.y === coords2.y;
 }
         
+/**
+ * Fetches the configurations of the current level of the 
+ * game.
+ * @param {Array} levels Contains each level object
+ * @param {int} current Current level to search for
+ */
 function determineLevel(levels, current) {
     return levels.find((l) => l.level === current);
+}
+
+/**
+ * Checks if the snake's head is hitting a fruit on the canvas.
+ * Removes the fruit from the board and generates a new one.
+ */
+function eatFruit() {
+    let snakeHead = SNAKE.coords[0];
+    let fruit = GAME.currentFruit;
+    if (coordsCompare(snakeHead, fruit)) {
+        // Grow snake
+        SNAKE.coords.push(SNAKE.tail);
+        drawBlock(SNAKE.tail, CANVAS.snakeColor);
+
+        // Generate new fruit
+        generateFruit();
+    }
+}
+
+/**
+ * Handles the creation of the fruit on the game board.
+ * The creation is random and places a single fruit on
+ * the board.
+ */
+function generateFruit() {
+    let dims = GAME.currentLevel.dimensions;
+
+    let x = Math.random() * dims.width;
+    let y = Math.random() * dims.height;
+
+    // Remaineder is used to bring the number back to the
+    // closest integer that is a multiple of the block size
+    x = x - (x % GAME.blockWidth);
+    y = y - (y % GAME.blockWidth);
+    
+    // Draw the fruit on the canvas
+    CANVAS.ctx.fillStyle = CANVAS.fruitColor;
+    CANVAS.ctx.fillRect(x, y, GAME.blockWidth, GAME.blockHeight);
+
+    // Store the position of the current fruit
+    GAME.currentFruit = {x: x, y: y};
 }
