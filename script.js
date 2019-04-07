@@ -46,8 +46,6 @@ function handleMenuSelection(e) {
         $("jeu").classList.remove("invisible");
         $("menu").classList.add("invisible");
         startGame();
-
-
     }
 }
 
@@ -59,6 +57,10 @@ function changePage(e) {
     if (e.target && e.target.id === "retour_menu") {
         $("jeu").classList.add("invisible");
         $("menu").classList.remove("invisible");
+        let loseMsg = $("lose-msg");
+        if (!loseMsg.classList.contains("invisible")) {
+            loseMsg.classList.add("invisible");
+        }
     }
 }
 
@@ -75,7 +77,7 @@ function startGame() {
     generateFruit();
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
-    setInterval(() => {
+    GAME.loopId = setInterval(() => {
         switchSnakeDirection();
     }, GAME.currentLevel.delay);
 }
@@ -281,7 +283,9 @@ function checkForHit(index) {
  * Handles the end of the game.
  */
 function endGame() {
-    alert("You lose!");
+    let loseMsg = $("lose-msg");
+    loseMsg.classList.remove("invisible");
+    clearInterval(GAME.loopId);
 }
 
 /**
