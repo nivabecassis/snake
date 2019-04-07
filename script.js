@@ -344,7 +344,15 @@ function eatFruit() {
  */
 function generateFruit() {
     let dims = GAME.currentLevel.dimensions;
-    let coords = getRandomNumber(dims);
+    let conflict = false;
+    let walls = GAME.currentLevel.wallCoords;
+    let coords;
+    do {
+        // Loop until we get coordinates for the fruit that are 
+        // not conflicting with those of the walls
+        coords = getRandomNumber(dims);
+        conflict = walls.some((wall) => { coordsCompare(wall, coords); });
+    } while (conflict === true);
     
     // Draw the fruit on the canvas
     drawBlock(coords, CANVAS.fruitColor);
@@ -381,7 +389,7 @@ function wallHit() {
     let snakeHead = SNAKE.coords[0];
     let walls = GAME.currentLevel.wallCoords;
     if (walls && walls.length > 0) {
-        walls.forEach((wall) => {
+        walls.some((wall) => {
             if (coordsCompare(snakeHead, wall)) {
                 // Snake head hit the wall
                 endGame();
