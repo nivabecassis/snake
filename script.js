@@ -17,6 +17,7 @@ function $(id) {
 function addNavigationHandlers() {
     $("menu").addEventListener("click", handleMenuSelection);
     $("retour_menu").addEventListener("click", changePage);
+    $("recommencer").addEventListener("click", restartGame);
 }
 
 /**
@@ -54,6 +55,7 @@ function handleMenuSelection(e) {
  * @param {Object} e MouseEvent that contains the click event 
  */
 function changePage(e) {
+    endGame();
     if (e.target && e.target.id === "retour_menu") {
         $("jeu").classList.add("invisible");
         $("menu").classList.remove("invisible");
@@ -70,16 +72,34 @@ function changePage(e) {
  * 
  */
 function startGame() {
+    countSimple = 0;
+    countSpecial = 0;
     // Set the dimensions of the canvas
+    setTimeout("conteurSimple","500");
+    setTimeout("conteurSpecial","500");
     CANVAS.canvas.width = GAME.currentLevel.dimensions.width;
     CANVAS.canvas.height = GAME.currentLevel.dimensions.height;
     generateWalls(GAME.currentLevel.walls);
     generateFruit();
+    generateSpecialFruit();
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
     GAME.loopId = setInterval(() => {
         switchSnakeDirection();
     }, GAME.currentLevel.delay);
+}
+
+/**
+ * Recommance la partie quand on appuie 
+ * sur le bouton recommencer
+ * 
+ */
+function restartGame(){
+    clearInterval(GAME.loopId);
+    SNAKE.coords = [];
+    SNAKE.direction = null;
+    $("lose-msg").classList.add("invisible");        
+    startGame();
 }
 
 /**
@@ -131,6 +151,7 @@ const GAME = {
 const CANVAS = {
     snakeColor: "black",
     fruitColor: "red",
+    specialfruitColor: "violet",
     wallColor: "black",
     bgColor: "white"
 }
@@ -217,6 +238,7 @@ function shiftSnake(stepX, stepY) {
             }
         }
         eatFruit();
+        eatSpecialFruit();
         gameEnd = wallHit();
         if (gameEnd === true) {
             break;
@@ -338,15 +360,35 @@ function eatFruit() {
 }
 
 /**
+ * Checks if the snake's head is hitting a special fruit on the canvas.
+ * Removes the special fruit from the board and generates a new one.
+ */
+function eatSpecialFruit() {
+    let snakeHead = SNAKE.coords[0];
+    let specialFruit = GAME.currentSpecialFruit;
+    if (coordsCompare(snakeHead, specialFruit)) {
+        // Grow snake
+        SNAKE.coords.push(SNAKE.tail);
+        drawBlock(SNAKE.tail, CANVAS.snakeColor);
+
+        // Generate new special fruit
+        generateSpecialFruit();
+    }
+}
+
+/**
  * Handles the creation of the fruit on the game board.
  * The creation is random and places a single fruit on
  * the board.
  */
+var countSimple = 0;
 function generateFruit() {
+    document.getElementById("conteurSimple").innerHTML = countSimple;
     let dims = GAME.currentLevel.dimensions;
     let conflict = false;
     let walls = GAME.currentLevel.wallCoords;
     let coords;
+    countSimple = countSimple+1;
     do {
         // Loop until we get coordinates for the fruit that are 
         // not conflicting with those of the walls
@@ -359,6 +401,38 @@ function generateFruit() {
 
     // Store the position of the current fruit
     GAME.currentFruit = {x: coords.x, y: coords.y};
+}
+
+/**
+ * Handles the creation of the special fruit on the game board.
+ * The creation is random and places a single fruit on
+ * the board.
+ */
+var countSpecial = 0;
+function generateSpecialFruit() {
+    document.getElementById("conteurSpecial").innerHTML = countSpecial;
+    let dims = GAME.currentLevel.dimensions;
+    let conflict = false;
+    let walls = GAME.currentLevel.wallCoords;
+    let coords;
+    countSpecial = countSpecial+10;
+    do {
+        // Loop until we get coordinates for the special fruit that 
+        // are not conflicting with those of the walls
+        coords = getRandomNumber(dims);
+        conflict = walls.some((wall) => { coordsCompare(wall, coords); });
+    } while (conflict === true);
+
+    do {
+        coords = getRandomNumber(dims);
+        conflict = coordsCompare(GAME.currentFruit, coords);
+    } while (conflict === true);
+    
+    // Draw the special fruit on the canvas
+    drawBlock(coords, CANVAS.specialfruitColor);
+
+    // Store the position of the current special fruit
+    GAME.currentSpecialFruit = {x: coords.x, y: coords.y};
 }
 
 /**
