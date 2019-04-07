@@ -39,13 +39,14 @@ h1 {
 
 .theme-button {
     margin: 1%;
-    padding: 1em 3em;
+    padding: 10px 10px;
     font-family: 'Ubuntu', sans-serif;
     background: none;
     display: inline-block;
     font-size: 1em;
     font-weight: 8  00;
     border: 3px solid black;
+    width: 150px;
 }
 
 body {
