@@ -1,42 +1,51 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("Loaded the page");
     $("start").addEventListener("click", changePage);
+    $("retour_menu").addEventListener("click", changePage);
+    
     CANVAS.canvas = $("canvas");
     CANVAS.ctx = CANVAS.canvas.getContext("2d");
     
-    // Ajouter les dimensions du canvas
-    let current = GAME.currentLevel;
-    console.log(current);
-    CANVAS.canvas.width = current["dimensions"].width;
-    CANVAS.canvas.height = current["dimensions"].height;
+    CANVAS.canvas.width = GAME.currentLevel.dimensions.width;
+    CANVAS.canvas.height = GAME.currentLevel.dimensions.height;
 });
 
 function $(id) {
     return document.getElementById(id);
 }
 
+/**
+ * Handles the navigation betweent the start and end of the game.
+ * @param {Object} e MouseEvent that contains the click event 
+ */
 function changePage(e) {
-    if (e.target) {
+    if (e.target && e.target.id === "start") {
         $("jeu").classList.remove("invisible");
         $("menu").classList.add("invisible");
         startGame();
+    } else if (e.target && e.target.id === "retour_menu") {
+        $("jeu").classList.add("invisible");
+        $("menu").classList.remove("invisible");
     }
 }
 
 /**
- * Fonction garde la boucle principale du jeu.
+ * Handles the main game loop. Each iteration is
+ * performed on the level's delay.
+ * 
  */
 function startGame() {
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
     setInterval(() => {
         switchSnakeDirection();
-        // draw();
-    }, GAME.currentLevel["delay"]);
+    }, GAME.currentLevel.delay);
 }
 
+/**
+ * All levels for the game are kept here
+ */
 const LEVELS = {
     levels: [
         {
@@ -79,8 +88,8 @@ const CANVAS = {}
  * @param {Object} currentLevel Level object 
  */
 function placeSnake(currentLevel) {
-    let x = currentLevel["dimensions"].width / 2;
-    let y = currentLevel["dimensions"].height / 2; 
+    let x = currentLevel.dimensions.width / 2;
+    let y = currentLevel.dimensions.height / 2; 
     for (let i = 0; i < SNAKE.initialLength; i++) {
         let pos = {x: x + (i * GAME.blockWidth), y: y};
         SNAKE.coords.push(pos);
@@ -100,7 +109,6 @@ function addSnakeListeners() {
 }
 
 function setSnakeDirection(direction) {
-    console.log(direction);
     SNAKE.direction = direction;
 }
 
@@ -221,5 +229,5 @@ function coordsCompare(coords1, coords2) {
 }
         
 function determineLevel(levels, current) {
-    return levels.find((l) => l["level"] === current);
+    return levels.find((l) => l.level === current);
 }
