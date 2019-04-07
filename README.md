@@ -22,6 +22,11 @@
   - Every level is stored in JSON format
   - Each level definition contains basic info like dimensions, delay, walls, fruit
 
+## To-Do
+
+[ ] Add check when generating fruit that it is not placed on a wall
+[x] Implement wall hit check
+[ ] Add game end functionality properly
 
 Background image attribution:
 <a href="https://www.vecteezy.com">Free Vector Design by: vecteezy.com</a>

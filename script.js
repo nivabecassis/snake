@@ -71,7 +71,7 @@ function startGame() {
     // Set the dimensions of the canvas
     CANVAS.canvas.width = GAME.currentLevel.dimensions.width;
     CANVAS.canvas.height = GAME.currentLevel.dimensions.height;
-
+    generateWalls(GAME.currentLevel.walls);
     generateFruit();
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
@@ -83,29 +83,27 @@ function startGame() {
 /**
  * All levels for the game are kept here.
  * Fruit are generated programmatically.
+ * Walls are generated programmatically.
  */
 const LEVELS = {
     levels: [
         {
             "level": 0,
             "dimensions": {width:500, height:500},
-            "delay": 50
+            "delay": 50,
+            "walls": 0
         },
         {
             "level": 1,
             "dimensions": {width:500, height:500},
-            "walls": [
-                [5,5], [5,6], [5,7], [5,8], [70,35], [71,35], [72,35]
-            ],
-            "delay": 40
+            "delay": 40,
+            "walls": 10
         },
         {
             "level": 2,
             "dimensions": {width:500, height:500},
-            "walls": [
-                [5,5], [5,6], [5,7], [5,8], [70,35], [71,35], [72,35]
-            ],
-            "delay": 20
+            "delay": 20,
+            "walls": 25
         }
     ]
 }
@@ -180,9 +178,6 @@ function switchSnakeDirection() {
         case "ArrowRight": 
             shiftSnake(1, 0);
             break;
-        default: 
-            console.log("Waiting for user input");
-            break;
     }
 }
 
@@ -216,6 +211,7 @@ function shiftSnake(stepX, stepY) {
             checkForHit(i);
         }
         eatFruit();
+        wallHit();
         wallWrap(i);
     }
 
@@ -331,7 +327,23 @@ function eatFruit() {
  */
 function generateFruit() {
     let dims = GAME.currentLevel.dimensions;
+    let coords = getRandomNumber(dims);
+    
+    // Draw the fruit on the canvas
+    drawBlock(coords, CANVAS.fruitColor);
 
+    // Store the position of the current fruit
+    GAME.currentFruit = {x: coords.x, y: coords.y};
+}
+
+/**
+ * Gets a random number that is within the canvas'
+ * dimensions.
+ * @param dims {x,y} Game dimensions
+ * @return {x,y} object containing coordinates of the random
+ * number.
+ */
+function getRandomNumber(dims) {
     let x = Math.random() * dims.width;
     let y = Math.random() * dims.height;
 
@@ -339,11 +351,39 @@ function generateFruit() {
     // closest integer that is a multiple of the block size
     x = x - (x % GAME.blockWidth);
     y = y - (y % GAME.blockWidth);
-    
-    // Draw the fruit on the canvas
-    CANVAS.ctx.fillStyle = CANVAS.fruitColor;
-    CANVAS.ctx.fillRect(x, y, GAME.blockWidth, GAME.blockHeight);
 
-    // Store the position of the current fruit
-    GAME.currentFruit = {x: x, y: y};
+    return {x: x, y: y};
+}
+
+/**
+ * Checks if the snake's head is hitting any of the defined
+ * walls in the current level. Ends the game if the snake 
+ * hit his head against a wall.
+ */
+function wallHit() {
+    let snakeHead = SNAKE.coords[0];
+    let walls = GAME.currentLevel.wallCoords;
+    if (walls && walls.length > 0) {
+        walls.forEach((wall) => {
+            if (coordsCompare(snakeHead, wall)) {
+                // Snake head hit the wall
+                endGame();
+            }
+        });
+    }
+}
+
+/**
+ * Creates and draws the walls on the canvas.
+ * @param {Array} walls Objects that defined {x,y} coordinates
+ * for every wall
+ */
+function generateWalls(walls) {
+    let dims = GAME.currentLevel.dimensions;
+    GAME.currentLevel.wallCoords = [];
+    for (let i = 0; i < walls; i++) {
+        let wallCoord = getRandomNumber(dims);
+        GAME.currentLevel.wallCoords.push(wallCoord);
+        drawBlock(wallCoord, CANVAS.wallColor);
+    }
 }
