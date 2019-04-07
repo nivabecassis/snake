@@ -1,14 +1,10 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function() {
-    $("start").addEventListener("click", changePage);
-    $("retour_menu").addEventListener("click", changePage);
+    addNavigationHandlers();
     
     CANVAS.canvas = $("canvas");
     CANVAS.ctx = CANVAS.canvas.getContext("2d");
-    
-    CANVAS.canvas.width = GAME.currentLevel.dimensions.width;
-    CANVAS.canvas.height = GAME.currentLevel.dimensions.height;
 });
 
 function $(id) {
@@ -16,15 +12,51 @@ function $(id) {
 }
 
 /**
+ * Adds the handlers for the page navigation
+ */
+function addNavigationHandlers() {
+    $("menu").addEventListener("click", handleMenuSelection);
+    $("retour_menu").addEventListener("click", changePage);
+}
+
+/**
+ * Handles the start of the game with the menu selection
+ * for game difficulty.
+ * @param {Object} e MouseEvent 
+ */
+function handleMenuSelection(e) {
+    if (e.target && e.target.nodeName.toUpperCase() === "INPUT") {
+        let level;
+        switch (e.target.value) {
+            case "FACILE":
+                level = 0;
+                break;
+            case "MEDIUM": 
+                level = 1;
+                break;
+            case "DIFFICILE":
+                level = 2; 
+                break;
+            default: 
+                console.log("Error - Can't find difficulty");
+                level = 0;
+                break;
+        }
+        GAME.currentLevel = determineLevel(LEVELS.levels, level);
+        $("jeu").classList.remove("invisible");
+        $("menu").classList.add("invisible");
+        startGame();
+
+
+    }
+}
+
+/**
  * Handles the navigation betweent the start and end of the game.
  * @param {Object} e MouseEvent that contains the click event 
  */
 function changePage(e) {
-    if (e.target && e.target.id === "start") {
-        $("jeu").classList.remove("invisible");
-        $("menu").classList.add("invisible");
-        startGame();
-    } else if (e.target && e.target.id === "retour_menu") {
+    if (e.target && e.target.id === "retour_menu") {
         $("jeu").classList.add("invisible");
         $("menu").classList.remove("invisible");
     }
@@ -36,6 +68,10 @@ function changePage(e) {
  * 
  */
 function startGame() {
+    // Set the dimensions of the canvas
+    CANVAS.canvas.width = GAME.currentLevel.dimensions.width;
+    CANVAS.canvas.height = GAME.currentLevel.dimensions.height;
+
     generateFruit();
     placeSnake(GAME.currentLevel);
     addSnakeListeners();
@@ -45,7 +81,8 @@ function startGame() {
 }
 
 /**
- * All levels for the game are kept here
+ * All levels for the game are kept here.
+ * Fruit are generated programmatically.
  */
 const LEVELS = {
     levels: [
@@ -73,7 +110,7 @@ const SNAKE = {
 }
 
 const GAME = {
-    currentLevel: determineLevel(LEVELS.levels, 0),
+    // currentLevel: determineLevel(LEVELS.levels, 0),
     blockWidth: 10,
     blockHeight: 10
 }
@@ -108,12 +145,8 @@ function placeSnake(currentLevel) {
  */
 function addSnakeListeners() {
     document.addEventListener("keydown", (e) => {
-        setSnakeDirection(e.key);
+        SNAKE.direction = e.key;
     });
-}
-
-function setSnakeDirection(direction) {
-    SNAKE.direction = direction;
 }
 
 /**
@@ -149,7 +182,7 @@ function switchSnakeDirection() {
 function shiftSnake(stepX, stepY) {
     // Erase the last block of the snake's body from the canvas
     SNAKE.tail = SNAKE.coords[SNAKE.coords.length - 1];
-    drawBlock(SNAKE.tail, CANVAS.bgColor);
+    eraseBlock(SNAKE.tail);
     
     // Shift each position of the snake by one
     for (let i = SNAKE.coords.length - 1; i > 0; i--) {
@@ -211,6 +244,14 @@ function drawBlock(position, color) {
     CANVAS.ctx.fillStyle = color;
     CANVAS.ctx.fillRect(position.x, position.y, 
         GAME.blockWidth, GAME.blockHeight);
+}
+
+/**
+ * Clears a rectangle off the canvas
+ * @param {Object} position {x,y} of the block to erase 
+ */
+function eraseBlock(position) {
+    CANVAS.ctx.clearRect(position.x, position.y, GAME.blockWidth, GAME.blockWidth);
 }
 
 /**

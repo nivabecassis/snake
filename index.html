@@ -2,30 +2,31 @@
 <html lang="fr">
     <head>
         <meta charset="utf-8" />
-        <title>Projet Web: Jeu SNAKE</title>
+        <title>Snake: The Game</title>
         <link rel="stylesheet" href="main.css">
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
         <script src="script.js"></script>
     </head>
     <body>
-        <div class="container">
-            <div id="menu">
-                <div>
-                    <div class="container">
-                        <h2>JEU SNAKE</h2>
-                        <input type="submit" id="start" value="COMMENCER LA PARTIE">
-                        <select id="niveau">
-                            <option>Facile</option>
-                            <option>Moyen</option>
-                            <option>Difficile</option>
-                        </select>
+        <div id="main-container" class="center">
+            <h1>SNAKE</h1>
+            <div>
+                <div id="menu">
+                    <div>
+                        <!-- <div>
+                            <input type="submit" id="start" value="COMMENCER LA PARTIE">
+                        </div> -->
+                        <div class="levels">
+                            <input type="button" class="theme-button" value="FACILE">
+                            <input type="button" class="theme-button" value="MEDIUM">
+                            <input type="button" class="theme-button" value="DIFFICILE">
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="jeu" class="invisible">
-                <h2>PLAY SNAKE</h2>
-                <input id="retour_menu" type="submit" value="MENU">
-                <canvas id="canvas"></canvas>
+                <div id="jeu" class="invisible">
+                    <canvas id="canvas"></canvas>
+                    <input id="retour_menu" class="theme-button" type="submit" value="MENU">
+                </div>
             </div>
         </div>
     </body>

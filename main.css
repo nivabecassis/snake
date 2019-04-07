@@ -1,9 +1,12 @@
 canvas {
     border: 2px solid black;
+    padding: 0;
+    margin: auto;
+    display: block;
 }
 
 #niveau {
-    display: block;
+    display: inline;
     margin: 2%;
 }
 
@@ -12,7 +15,40 @@ canvas {
     width: 80%;
 }
 
+.center {
+    text-align: center;
+}
+
 
 .invisible {
     display: none;
+}
+
+#retour_menu {
+    margin-top: 2%;
+    display: inline;
+}
+
+h1 {
+    font-size: 3em
+}
+
+.levels {
+    margin-top: 2%;
+}
+
+.theme-button {
+    margin: 1%;
+    padding: 1em 3em;
+    font-family: 'Ubuntu', sans-serif;
+    background: none;
+    display: inline-block;
+    font-size: 1em;
+    font-weight: 8  00;
+    border: 3px solid black;
+}
+
+body {
+    background-image: url("./content/desert.jpeg");
+    font-family: 'Ubuntu', sans-serif;
 }

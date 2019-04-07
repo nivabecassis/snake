@@ -1,7 +1,5 @@
 # Projet Jeu SNAKE
 
-Due: 8 avril
-
 ## Notes
 
 - Snake moves around based on user input (arrow keys)
@@ -19,7 +17,6 @@ Due: 8 avril
   - on every snake move: shift the coords of the snake by one
 
 - Allow user to input directions of the snake's head using arrow keys
-- 
 
 - Level selection:
   - Every level is stored in JSON format
