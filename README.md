@@ -21,3 +21,7 @@
 - Level selection:
   - Every level is stored in JSON format
   - Each level definition contains basic info like dimensions, delay, walls, fruit
+
+
+Background image attribution:
+<a href="https://www.vecteezy.com">Free Vector Design by: vecteezy.com</a>

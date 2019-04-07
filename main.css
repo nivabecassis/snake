@@ -49,6 +49,7 @@ h1 {
 }
 
 body {
-    background-image: url("./content/desert.jpeg");
+    background-image: url("./content/desert.jpg");
+    background-size: 100%;
     font-family: 'Ubuntu', sans-serif;
 }

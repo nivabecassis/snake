@@ -89,10 +89,23 @@ const LEVELS = {
         {
             "level": 0,
             "dimensions": {width:500, height:500},
+            "delay": 50
+        },
+        {
+            "level": 1,
+            "dimensions": {width:500, height:500},
             "walls": [
                 [5,5], [5,6], [5,7], [5,8], [70,35], [71,35], [72,35]
             ],
-            "delay": 50
+            "delay": 40
+        },
+        {
+            "level": 2,
+            "dimensions": {width:500, height:500},
+            "walls": [
+                [5,5], [5,6], [5,7], [5,8], [70,35], [71,35], [72,35]
+            ],
+            "delay": 20
         }
     ]
 }
