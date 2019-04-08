@@ -24,10 +24,14 @@
 
 ## To-Do
 
-[ ] Add check when generating fruit that it is not placed on a wall
-[x] Implement wall hit check
-[x] Add game end functionality properly
-[x] Fix game end functionality bugs
+[x] Add check when generating fruit that it is not placed on a wall  
+[x] Implement wall hit check  
+[x] Add game end functionality properly  
+[x] Fix game end functionality bugs  
+
+## GitLab
+
+[GitLab projet url](https://forge.univ-lyon1.fr/p1603891/projet-jeu-snake)
 
 Background image attribution:
 <a href="https://www.vecteezy.com">Free Vector Design by: vecteezy.com</a>
